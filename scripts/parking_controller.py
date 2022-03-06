@@ -52,9 +52,9 @@ class ParkingController():
 
         # CASE: Cone to the side
         else:
-            if target_angle > math.pi / 8:
+            if target_angle > math.pi/8:
                 self.angle = math.pi/2
-            elif target_angle < math.pi / 8:
+            elif target_angle < math.pi/8:
                 self.angle = -math.pi/2
             else:
                 # CASE: Angle is fine, but we need to get closer
