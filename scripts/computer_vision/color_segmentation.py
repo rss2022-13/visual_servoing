@@ -33,11 +33,52 @@ def cd_color_segmentation(img, template):
 		bbox: ((x1, y1), (x2, y2)); the bounding box of the cone, unit in px
 				(x1, y1) is the top left of the bbox and (x2, y2) is the bottom right of the bbox
 	"""
-	########## YOUR CODE STARTS HERE ##########
-
+	#bad: 15,17,14,11,5
+	#mid:9,6,2
 	bounding_box = ((0,0),(0,0))
 
-	########### YOUR CODE ENDS HERE ###########
+	hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
+        #colors in hsv
+        light_orange = np.array([5, 200, 200])
+        dark_orange = np.array([35,255,255])
+	
+        #light_orange = np.array([5, 200, 200])
+        #dark_orange = np.array([35,255,255])
+	
+	#light_orange = np.array([5, 200, 200])
+        #dark_orange = np.array([25,255,255])
+        
+	#light_orange = np.array([5, 100, 20])
+        #dark_orange = np.array([15,255,255])
+
+        mask = cv2.inRange(hsv, light_orange, dark_orange)
+        output = cv2.bitwise_and(img,img, mask= mask)
+
+        gray = cv2.cvtColor(output, cv2.COLOR_BGR2GRAY)
+        kernel = np.ones((5,5), np.uint8)
+        kernel2 = np.ones((5,5), np.uint8)
+        gray = cv2.dilate(gray, kernel2, iterations=1)
+        #gray = cv2.erode(gray, kernel, iterations=1)
+        
+        # create a binary thresholded image
+        ret,threshold = cv2.threshold(gray,50,255,cv2.THRESH_BINARY)
+        #cv2.adaptiveThreshold(gray,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,2)
+
+        # contours from the thresholded image
+        contours = cv2.findContours(threshold, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        
+        shape = gray.copy()
+        cv2.drawContours(shape, contours[1], -1, (255,0,0), 2)
+        
+        x,y,w,h = cv2.boundingRect(contours[0])
+        bounding_box = ((x,y),(x+w,y+h))
+        cv2.rectangle(img,(x,y),(x+w,y+h),(255,255,255),2)
+        cv2.rectangle(gray,(x,y),(x+w,y+h),(255,255,255),2)
+
+        #image_print(shape)
+        image_print(img)
+        image_print(gray)
+        #print(bounding_box)
 	# Return bounding box
 	return bounding_box
