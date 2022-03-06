@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from matplotlib.pyplot import draw
 import rospy
 import numpy as np
 
@@ -11,6 +12,7 @@ from sensor_msgs.msg import Image
 from ackermann_msgs.msg import AckermannDriveStamped
 from visualization_msgs.msg import Marker
 from visual_servoing.msg import ConeLocation, ConeLocationPixel
+from geometry_msgs.msg import Point
 
 #The following collection of pixel locations and corresponding relative
 #ground plane locations are used to compute our homography matrix
@@ -20,10 +22,10 @@ from visual_servoing.msg import ConeLocation, ConeLocationPixel
 
 ######################################################
 ## DUMMY POINTS -- ENTER YOUR MEASUREMENTS HERE
-PTS_IMAGE_PLANE = [[-1, -1],
-                   [-1, -1],
-                   [-1, -1],
-                   [-1, -1]] # dummy points
+PTS_IMAGE_PLANE = [[437, 287],
+                   [468, 246],
+                   [354, 246],
+                   [279, 246]] # dummy points
 ######################################################
 
 # PTS_GROUND_PLANE units are in inches
@@ -31,10 +33,10 @@ PTS_IMAGE_PLANE = [[-1, -1],
 
 ######################################################
 ## DUMMY POINTS -- ENTER YOUR MEASUREMENTS HERE
-PTS_GROUND_PLANE = [[-1, -1],
-                    [-1, -1],
-                    [-1, -1],
-                    [-1, -1]] # dummy points
+PTS_GROUND_PLANE = [[10.5, -.625],
+                    [22.625, -4.9375],
+                    [22.625, 4.675],
+                    [22.625, 11.0]] # dummy points
 ######################################################
 
 METERS_PER_INCH = 0.0254
@@ -45,8 +47,8 @@ class HomographyTransformer:
         self.cone_px_sub = rospy.Subscriber("/relative_cone_px", ConeLocationPixel, self.cone_detection_callback)
         self.cone_pub = rospy.Publisher("/relative_cone", ConeLocation, queue_size=10)
 
-        self.marker_pub = rospy.Publisher("/cone_marker",
-            Marker, queue_size=1)
+        self.mouse_sub = rospy.Subscriber("/zed/zed_node/rgb/image_rect_color_mouse_left", Point, self.mouse_callback)
+        self.marker_pub = rospy.Publisher("/cone_marker",Marker, queue_size=1)
 
         if not len(PTS_GROUND_PLANE) == len(PTS_IMAGE_PLANE):
             rospy.logerr("ERROR: PTS_GROUND_PLANE and PTS_IMAGE_PLANE should be of same length")
@@ -62,6 +64,10 @@ class HomographyTransformer:
         np_pts_image = np.float32(np_pts_image[:, np.newaxis, :])
 
         self.h, err = cv2.findHomography(np_pts_image, np_pts_ground)
+
+    def mouse_callback(self,msg):
+        x, y = self.transformUvToXy(msg.u,msg.v)
+        self.draw_marker(x,y,"/world")
 
     def cone_detection_callback(self, msg):
         #Extract information from message
