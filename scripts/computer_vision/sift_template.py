@@ -77,7 +77,7 @@ def cd_sift_ransac(img, template):
                     x_max = max(pt[0][0], x_max)
                     y_max = max(pt[0][1], y_max)
                 img2 = cv2.polylines(img, [dst], True, 255, 3, cv2.LINE_AA)
-                image_print(img2)
+                #image_print(img2)
 
 		########### YOUR CODE ENDS HERE ###########
 
@@ -88,7 +88,7 @@ def cd_sift_ransac(img, template):
 		print "[SIFT] not enough matches; matches: ", len(good)
 
 		# Return bounding box of area 0 if no match found
-                image_print(img)
+                #image_print(img)
 		return ((0,0), (0,0))
 
 def cd_template_matching(img, template):
@@ -124,21 +124,21 @@ def cd_template_matching(img, template):
 		########## YOUR CODE STARTS HERE ##########
 		# Use OpenCV template matching functions to find the best match
 		# across template scales.
-                match = cv2.matchTemplate(img_canny, resized_template, cv2.TM_SQDIFF_NORMED)
+                match = cv2.matchTemplate(img_canny, resized_template, cv2.TM_CCOEFF_NORMED)
                 min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(match)
 
                 if best_match is None:
                     # Change to use max values if method used is not TM_SQDIFF or TM_SQDIFF_NORMED
-                    best_score = min_val
+                    best_score = max_val
                     best_match = match
-                    x_min = min_loc[0]
-                    y_min = min_loc[1]
+                    x_min = max_loc[0]
+                    y_min = max_loc[1]
                     x_max = x_min + w
                     y_max = y_min + h
-                elif best_score > min_val:
-                    best_score = min_val
-                    x_min = min_loc[0]
-                    y_min = min_loc[1]
+                elif best_score < max_val:
+                    best_score = max_val
+                    x_min = max_loc[0]
+                    y_min = max_loc[1]
                     x_max = x_min + w
                     y_max = y_min + h
                     best_match = match
@@ -148,6 +148,6 @@ def cd_template_matching(img, template):
 		bounding_box = ((x_min,y_min),(x_max,y_max))
 		########### YOUR CODE ENDS HERE ###########
         img2 = cv2.rectangle(img, bounding_box[0], bounding_box[1], (255, 0, 0), 2)
-        image_print(img2)
+        #image_print(img2)
 
 	return bounding_box
