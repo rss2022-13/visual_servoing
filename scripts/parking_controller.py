@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from dis import dis
 import rospy
 import numpy as np
 import math
@@ -25,6 +26,12 @@ class ParkingController():
         self.relative_y = 0
         self.speed = 0.5
         self.angle = 0
+        self.dist_P = 0.25
+        self.dist_D = 0.25
+        self.ang_P = 0.25
+        self.ang_D = 0.25
+        self.prev_dist_err = 0
+        self.prev_ang_err = 0
 
     def relative_cone_callback(self, msg):
         self.relative_x = msg.x_pos
@@ -34,9 +41,16 @@ class ParkingController():
         target_angle = math.atan2(self.relative_y, self.relative_x)
         current_distance = (self.relative_x**2 + self.relative_y**2)**(0.5)
 
+        dist_err = current_distance - self.parking_distance
+        ang_err = target_angle
+        self.speed = self.dist_P*dist_err - abs(dist_err)/dist_err*self.dist_D*abs(dist_err - self.prev_dist_err)
+        if abs(self.speed) > 1:
+                self.speed = self.speed/abs(self.speed)
+        self.steer_angle = self.ang_P*ang_err - abs(ang_err)/ang_err * self.ang_D*abs(ang_err - self.prev_ang_err)
+        '''
         # CASE FOR SIMULATOR ONLY: Cone behind us:
-        if self.relative_y <= 0:
-            if self.relative_x <= 0:
+        if self.relative_x <= 0:
+            if self.relative_y <= 0:
                 self.angle = -math.pi/2
             else:
                 self.angle = math.pi/2
@@ -47,8 +61,8 @@ class ParkingController():
 
         # CASE: Cone too close
         if current_distance < self.parking_distance:
-            self.angle * -1
-            self.speed * -1
+            #self.angle * -1
+            self.speed = -self.speed
 
         # CASE: Cone to the side
         else:
@@ -62,9 +76,9 @@ class ParkingController():
                     self.speed = 0.5
                 else:
                     self.speed = 0
-
+        '''
         drive_cmd.drive.speed = self.speed
-        drive_cmd.drive.steering_angle = self.angle
+        drive_cmd.drive.steering_angle = self.steer_angle
         self.drive_pub.publish(drive_cmd)
         self.error_publisher()
 
