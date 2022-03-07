@@ -34,6 +34,7 @@ class ParkingController():
         self.prev_ang_err = 0
 
     def relative_cone_callback(self, msg):
+        #relative x and y wrt frame of racecar
         self.relative_x = msg.x_pos
         self.relative_y = msg.y_pos
         drive_cmd = AckermannDriveStamped()
@@ -41,12 +42,23 @@ class ParkingController():
         target_angle = math.atan2(self.relative_y, self.relative_x)
         current_distance = (self.relative_x**2 + self.relative_y**2)**(0.5)
 
+        #TODO: increase ang_P
         dist_err = current_distance - self.parking_distance
         ang_err = target_angle
         self.speed = self.dist_P*dist_err - abs(dist_err)/dist_err*self.dist_D*abs(dist_err - self.prev_dist_err)
         if abs(self.speed) > 1:
                 self.speed = self.speed/abs(self.speed)
         self.steer_angle = self.ang_P*ang_err - abs(ang_err)/ang_err * self.ang_D*abs(ang_err - self.prev_ang_err)
+
+        #TODO: change so that if youre far and angle is large, just go forward
+        #or increase the threshold for a large angle
+        if abs(ang_err) >= math.pi/12: #prioritize fixing large angle error, back up and rotate
+            self.speed = -0.5
+            self.steer_angle = -abs(ang_err)/ang_err * abs(ang_err)
+
+        print('speed:', self.speed, 'steer:', self.steer_angle, 'ang err:', ang_err)
+        self.prev_ang_err = ang_err
+        self.prev_dist_err = dist_err
         '''
         # CASE FOR SIMULATOR ONLY: Cone behind us:
         if self.relative_x <= 0:
