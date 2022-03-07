@@ -41,7 +41,9 @@ class ConeDetector():
         # YOUR CODE HERE
         # detect the cone and publish its
         # pixel location in the image.
-        cd_color_segmentation(image_msg)
+        left, right = cd_color_segmentation(image_msg)
+        pos = new ConeLocationPixel((left[0]+right[0])/2.0, 1.0*right[1])
+        self.cone_pub.publish(pos)
         # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
         #################################
 
