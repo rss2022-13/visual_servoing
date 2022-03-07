@@ -66,8 +66,8 @@ class ParkingController():
             self.speed = 0
             self.steer_angle = 0
         '''
-        
-        print('speed:', self.speed, 'steer:', self.steer_angle, 'ang err:', ang_err)
+
+        #print('speed:', self.speed, 'steer:', self.steer_angle, 'ang err:', ang_err)
         self.prev_ang_err = ang_err
         self.prev_dist_err = dist_err
         '''
