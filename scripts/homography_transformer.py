@@ -22,10 +22,10 @@ from geometry_msgs.msg import Point
 
 ######################################################
 ## DUMMY POINTS -- ENTER YOUR MEASUREMENTS HERE
-PTS_IMAGE_PLANE = [[437, 287],
-                   [468, 246],
-                   [354, 246],
-                   [279, 246]] # dummy points
+PTS_IMAGE_PLANE = [[287,437],
+                   [246,468],
+                   [246,354],
+                   [246,279]] # dummy points
 ######################################################
 
 # PTS_GROUND_PLANE units are in inches
@@ -66,8 +66,8 @@ class HomographyTransformer:
         self.h, err = cv2.findHomography(np_pts_image, np_pts_ground)
 
     def mouse_callback(self,msg):
-        x, y = self.transformUvToXy(msg.x,msg.y)
-        self.draw_marker(x,y,"/world")
+        x, y = self.transformUvToXy(msg.y,msg.x)
+        self.draw_marker(x,y,"/map")
 
     def cone_detection_callback(self, msg):
         #Extract information from message
