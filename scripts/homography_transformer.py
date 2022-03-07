@@ -22,10 +22,10 @@ from geometry_msgs.msg import Point
 
 ######################################################
 ## DUMMY POINTS -- ENTER YOUR MEASUREMENTS HERE
-PTS_IMAGE_PLANE = [[287,437],
-                   [246,468],
-                   [246,354],
-                   [246,279]] # dummy points
+PTS_IMAGE_PLANE = [[437, 287],
+                   [468,246],
+                   [354,246],
+                   [279,246]] # dummy points
 ######################################################
 
 # PTS_GROUND_PLANE units are in inches
