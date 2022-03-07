@@ -42,7 +42,7 @@ class ConeDetector():
         # detect the cone and publish its
         # pixel location in the image.
         left, right = cd_color_segmentation(image)
-        rospy.loginfo(left)
+        #rospy.loginfo(left)
         pos = ConeLocationPixel()
         pos.u = (left[0]+right[0])/2.0
         pos.v = 1.0*right[1]
