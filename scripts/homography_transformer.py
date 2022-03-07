@@ -22,10 +22,10 @@ from geometry_msgs.msg import Point
 
 ######################################################
 ## DUMMY POINTS -- ENTER YOUR MEASUREMENTS HERE
-PTS_IMAGE_PLANE = [[287,437],
-                   [246,468],
-                   [246,354],
-                   [246,279]] # dummy points
+PTS_IMAGE_PLANE = [[325, 257], #325,257
+                   [443,257], #443,257
+                   [428,238], #428,238
+                   [334,238]] # 334,238
 ######################################################
 
 # PTS_GROUND_PLANE units are in inches
@@ -33,10 +33,10 @@ PTS_IMAGE_PLANE = [[287,437],
 
 ######################################################
 ## DUMMY POINTS -- ENTER YOUR MEASUREMENTS HERE
-PTS_GROUND_PLANE = [[10.5, -.625],
-                    [22.625, -4.9375],
-                    [22.625, 4.675],
-                    [22.625, 11.0]] # dummy points
+PTS_GROUND_PLANE = [[27.5, 6.125],
+                    [27.5, -4.875],
+                    [36.125, -4.875],
+                    [36.125, 6.125]] # dummy points
 ######################################################
 
 METERS_PER_INCH = 0.0254
@@ -83,6 +83,7 @@ class HomographyTransformer:
         relative_xy_msg.y_pos = y
 
         self.cone_pub.publish(relative_xy_msg)
+        self.draw_marker(x,y,"/map")
 
 
     def transformUvToXy(self, u, v):
