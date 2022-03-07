@@ -4,8 +4,8 @@
   	<param name="drive_topic" value="/drive" />
     <param name="ang_P" value="0.45" />
     <param name="ang_D" value="0.25" />
-    <param name="dist_P" value="0.25" />
-    <param name="dist_D" value="0.25" />
+    <param name="dist_P" value="1" />
+    <param name="dist_D" value="0.2" />
   </node>
 
   <node pkg="visual_servoing" name="cone_sim_marker" type="cone_sim_marker.py" output="screen">
