@@ -66,7 +66,7 @@ class HomographyTransformer:
         self.h, err = cv2.findHomography(np_pts_image, np_pts_ground)
 
     def mouse_callback(self,msg):
-        x, y = self.transformUvToXy(msg.y,msg.x)
+        x, y = self.transformUvToXy(msg.x,msg.y)
         self.draw_marker(x,y,"/map")
 
     def cone_detection_callback(self, msg):
