@@ -2,6 +2,7 @@
 
 import rospy
 import numpy as np
+import math
 
 from visual_servoing.msg import ConeLocation, ParkingError
 from ackermann_msgs.msg import AckermannDriveStamped
@@ -13,31 +14,57 @@ class ParkingController():
     Can be used in the simulator and on the real robot.
     """
     def __init__(self):
-        rospy.Subscriber("/relative_cone", ConeLocation,
-            self.relative_cone_callback)
+        rospy.Subscriber("/relative_cone", ConeLocation, self.relative_cone_callback)
 
         DRIVE_TOPIC = rospy.get_param("~drive_topic") # set in launch file; different for simulator vs racecar
-        self.drive_pub = rospy.Publisher(DRIVE_TOPIC,
-            AckermannDriveStamped, queue_size=10)
-        self.error_pub = rospy.Publisher("/parking_error",
-            ParkingError, queue_size=10)
+        self.drive_pub = rospy.Publisher(DRIVE_TOPIC, AckermannDriveStamped, queue_size=10)
+        self.error_pub = rospy.Publisher("/parking_error", ParkingError, queue_size=10)
 
-        self.parking_distance = .75 # meters; try playing with this number!
+        self.parking_distance = .5 # meters; try playing with this number!
         self.relative_x = 0
         self.relative_y = 0
+        self.speed = 0.5
+        self.angle = 0
 
     def relative_cone_callback(self, msg):
         self.relative_x = msg.x_pos
         self.relative_y = msg.y_pos
         drive_cmd = AckermannDriveStamped()
 
-        #################################
+        target_angle = math.atan2(self.relative_y, self.relative_x)
+        current_distance = (self.relative_x**2 + self.relative_y**2)**(0.5)
 
-        # YOUR CODE HERE
-        # Use relative position and your control law to set drive_cmd
+        # CASE FOR SIMULATOR ONLY: Cone behind us:
+        if self.relative_y <= 0:
+            if self.relative_x <= 0:
+                self.angle = -math.pi/2
+            else:
+                self.angle = math.pi/2
+        
+        # CASE: Cone in Front
+        else:
+            self.angle = target_angle
 
-        #################################
+        # CASE: Cone too close
+        if current_distance < self.parking_distance:
+            self.angle * -1
+            self.speed * -1
 
+        # CASE: Cone to the side
+        else:
+            if target_angle > math.pi/8:
+                self.angle = math.pi/2
+            elif target_angle < math.pi/8:
+                self.angle = -math.pi/2
+            else:
+                # CASE: Angle is fine, but we need to get closer
+                if current_distance > self.parking_distance + 1: # We set the correctness tolerance as +1 Meter
+                    self.speed = 0.5
+                else:
+                    self.speed = 0
+
+        drive_cmd.drive.speed = self.speed
+        drive_cmd.drive.steering_angle = self.angle
         self.drive_pub.publish(drive_cmd)
         self.error_publisher()
 
@@ -46,14 +73,10 @@ class ParkingController():
         Publish the error between the car and the cone. We will view this
         with rqt_plot to plot the success of the controller
         """
-        error_msg = ParkingError()
-
-        #################################
-
-        # YOUR CODE HERE
-        # Populate error_msg with relative_x, relative_y, sqrt(x^2+y^2)
-
-        #################################
+        error_msg = ParkingError()      
+        error_msg.x_error = self.relative_x
+        error_msg.y_error = self.relative_y
+        error_msg.distance_error = (self.relative_x**2 + self.relative_y**2)**(0.5) - self.parking_distance
         
         self.error_pub.publish(error_msg)
 
