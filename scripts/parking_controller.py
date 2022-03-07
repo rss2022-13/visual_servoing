@@ -26,10 +26,10 @@ class ParkingController():
         self.relative_y = 0
         self.speed = 0.5
         self.angle = 0
-        self.dist_P = 0.25
-        self.dist_D = 0.25
-        self.ang_P = 0.25
-        self.ang_D = 0.25
+        self.dist_P = rospy.get_param("~dist_P")
+        self.dist_D = rospy.get_param("~dist_D")
+        self.ang_P = rospy.get_param("~ang_P")
+        self.ang_D = rospy.get_param("~ang_D")
         self.prev_dist_err = 0
         self.prev_ang_err = 0
 
@@ -42,7 +42,11 @@ class ParkingController():
         target_angle = math.atan2(self.relative_y, self.relative_x)
         current_distance = (self.relative_x**2 + self.relative_y**2)**(0.5)
 
-        #TODO: increase ang_P
+        self.dist_P = rospy.get_param("~dist_P")
+        self.dist_D = rospy.get_param("~dist_D")
+        self.ang_P = rospy.get_param("~ang_P")
+        self.ang_D = rospy.get_param("~ang_D")
+
         dist_err = current_distance - self.parking_distance
         ang_err = target_angle
         self.speed = self.dist_P*dist_err - abs(dist_err)/dist_err*self.dist_D*abs(dist_err - self.prev_dist_err)
@@ -52,10 +56,17 @@ class ParkingController():
 
         #TODO: change so that if youre far and angle is large, just go forward
         #or increase the threshold for a large angle
-        if abs(ang_err) >= math.pi/12: #prioritize fixing large angle error, back up and rotate
+        if abs(ang_err) >= math.pi/4: #prioritize fixing large angle error, back up and rotate
             self.speed = -0.5
             self.steer_angle = -abs(ang_err)/ang_err * abs(ang_err)
 
+        '''
+        #stop if close enough
+        if abs(dist_err) < 0.05 and abs(ang_err) < 0.1:
+            self.speed = 0
+            self.steer_angle = 0
+        '''
+        
         print('speed:', self.speed, 'steer:', self.steer_angle, 'ang err:', ang_err)
         self.prev_ang_err = ang_err
         self.prev_dist_err = dist_err
