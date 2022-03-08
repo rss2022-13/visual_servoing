@@ -52,7 +52,7 @@ def cd_color_segmentation(img, template):
 	#light_orange = np.array([5, 100, 20])
         #dark_orange = np.array([15,255,255])
 
-        h,w = img.shape
+        h,w,c = img.shape
 
         overlay = np.zeros((h,w),np.float32)
         for i in range(int(5*overlay.shape[0])/8, int(7*overlay.shape[0]/8)):
