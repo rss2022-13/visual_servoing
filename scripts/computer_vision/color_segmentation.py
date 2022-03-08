@@ -53,16 +53,12 @@ def cd_color_segmentation(img, template):
         #dark_orange = np.array([15,255,255])
  
         '''
-
         overlay = np.zeros((h,w),np.float32)
         for i in range(int(5*overlay.shape[0])/8, int(7*overlay.shape[0]/8)):
                 overlay[i] = np.ones((w),np.float32)
-
         clip_mat = cv2.CreateMat(h,w,cv2.CV_32FC3)
         clip_arr = cv2.fromarray(overlay)
-
         clip = cv2.cvtColor(clip_arr,clip_mat,cv2.CV_BGR2GRAY)
-
         # img = cv2.bitwise_and(img,clip)
         '''
 

@@ -1,3 +1,4 @@
+./test_images_cone/line.jpg,"((50,50), (100,100))"
 ./test_images_cone/test1.jpg,"((349,198), (459, 343))"
 ./test_images_cone/test2.jpg,"((526,198), (640, 360))"
 ./test_images_cone/test3.jpg,"((482,189), (567,285))"
