@@ -40,7 +40,7 @@ class ParkingController():
         drive_cmd = AckermannDriveStamped()
 
         target_angle = math.atan2(self.relative_y, self.relative_x)
-        current_distance = (self.relative_x**2 + self.relative_y**2)**(0.5) + .5
+        current_distance = (self.relative_x**2 + self.relative_y**2)**(0.5)
 
         self.dist_P = rospy.get_param("~dist_P")
         self.dist_D = rospy.get_param("~dist_D")
