@@ -52,8 +52,22 @@ def cd_color_segmentation(img, template):
 	#light_orange = np.array([5, 100, 20])
         #dark_orange = np.array([15,255,255])
 
+        h,w = img.shape
+
+        overlay = np.zeros((h,w),np.float32)
+        for i in range(int(5*overlay.shape[0])/8, int(7*overlay.shape[0]/8)):
+                overlay[i] = np.ones((w),np.float32)
+
+        clip_mat = cv2.CreateMat(h,w,cv2.CV_32FC3)
+        clip_arr = cv2.fromarray(overlay)
+
+        clip = cv2.cvtColor(clip_arr,clip_mat,cv2.CV_BGR2GRAY)
+
+        # img = cv2.bitwise_and(img,clip)
+
         mask = cv2.inRange(hsv, light_orange, dark_orange)
-        output = cv2.bitwise_and(img,img, mask= mask)
+        mediary = cv2.bitwise_and(img,img, mask= mask)
+        output = cv2.bitwise_and(mediary,clip)
 
         gray = cv2.cvtColor(output, cv2.COLOR_BGR2GRAY)
         kernel = np.ones((5,5), np.uint8)
@@ -76,8 +90,8 @@ def cd_color_segmentation(img, template):
         cv2.rectangle(img,(x,y),(x+w,y+h),(255,255,255),2)
         cv2.rectangle(gray,(x,y),(x+w,y+h),(255,255,255),2)
 
-        image_print(shape)
-        image_print(img)
-        image_print(gray)
+        # image_print(shape)
+        # image_print(img)
+        # image_print(gray)
         # print(bounding_box)
 	return bounding_box
