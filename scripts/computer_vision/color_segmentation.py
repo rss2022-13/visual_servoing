@@ -78,6 +78,6 @@ def cd_color_segmentation(img, template):
 
         image_print(shape)
         image_print(img)
-        #image_print(gray)
-        #print(bounding_box)
+        image_print(gray)
+        # print(bounding_box)
 	return bounding_box
