@@ -40,7 +40,7 @@ class ParkingController():
         drive_cmd = AckermannDriveStamped()
 
         target_angle = math.atan2(self.relative_y, self.relative_x)
-        current_distance = (self.relative_x**2 + self.relative_y**2)**(0.5)
+        current_distance = (self.relative_x**2 + self.relative_y**2)**(0.5) + .5
 
         self.dist_P = rospy.get_param("~dist_P")
         self.dist_D = rospy.get_param("~dist_D")
@@ -49,10 +49,10 @@ class ParkingController():
 
         dist_err = current_distance - self.parking_distance
         ang_err = target_angle
-        self.speed = self.dist_P*dist_err - abs(dist_err)/dist_err*self.dist_D*abs(dist_err - self.prev_dist_err)
+        self.speed = self.dist_P*dist_err + self.dist_D*(dist_err - self.prev_dist_err)
         if abs(self.speed) > 1:
-                self.speed = self.speed/abs(self.speed)
-        self.steer_angle = self.ang_P*ang_err - abs(ang_err)/ang_err * self.ang_D*abs(ang_err - self.prev_ang_err)
+            self.speed = self.speed/abs(self.speed)
+        self.steer_angle = self.ang_P*ang_err + self.ang_D*(ang_err - self.prev_ang_err)
 
         #TODO: change so that if youre far and angle is large, just go forward
         #or increase the threshold for a large angle
@@ -66,8 +66,8 @@ class ParkingController():
             self.speed = 0
             self.steer_angle = 0
         '''
-        
-        print('speed:', self.speed, 'steer:', self.steer_angle, 'ang err:', ang_err)
+
+        #print('speed:', self.speed, 'steer:', self.steer_angle, 'ang err:', ang_err)
         self.prev_ang_err = ang_err
         self.prev_dist_err = dist_err
         '''

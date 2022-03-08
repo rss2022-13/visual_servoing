@@ -9,8 +9,8 @@
   	<param name="drive_topic" value="/vesc/ackermann_cmd_mux/input/navigation" />
     <param name="ang_P" value="0.45" />
     <param name="ang_D" value="0.25" />
-    <param name="dist_P" value="0.25" />
-    <param name="dist_D" value="0.25" />
+    <param name="dist_P" value="1" />
+    <param name="dist_D" value="0.2" />
   </node>
 
   <node pkg="visual_servoing" name="cone_detector" type="cone_detector.py" output="screen">
