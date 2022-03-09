@@ -20,8 +20,8 @@ def image_print(img):
 	Press any key to continue.
 	"""
 	cv2.imshow("image", img)
-	cv2.waitKey(0)
-	cv2.destroyAllWindows()
+	cv2.waitKey(3)
+	#cv2.destroyAllWindows()
 
 def cd_color_segmentation(img, template):
 	"""
@@ -40,8 +40,8 @@ def cd_color_segmentation(img, template):
 	hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
         #colors in hsv
-        light_orange = np.array([10, 125, 125])
-        dark_orange = np.array([35,255,255])
+        light_orange = np.array([3, 140, 140])
+        dark_orange = np.array([25,255,255])
 	
         #light_orange = np.array([5, 200, 200])
         #dark_orange = np.array([35,255,255])
@@ -51,33 +51,30 @@ def cd_color_segmentation(img, template):
         
 	#light_orange = np.array([5, 100, 20])
         #dark_orange = np.array([15,255,255])
- 
-        '''
-        overlay = np.zeros((h,w),np.float32)
-        for i in range(int(5*overlay.shape[0])/8, int(7*overlay.shape[0]/8)):
-                overlay[i] = np.ones((w),np.float32)
-        clip_mat = cv2.CreateMat(h,w,cv2.CV_32FC3)
-        clip_arr = cv2.fromarray(overlay)
-        clip = cv2.cvtColor(clip_arr,clip_mat,cv2.CV_BGR2GRAY)
-        # img = cv2.bitwise_and(img,clip)
-        '''
 
         mask = cv2.inRange(hsv, light_orange, dark_orange)
-        testing = cv2.bitwise_and(img,img, mask= mask)
-        #image_print(testing)
-        h,w,c = testing.shape
+        isolated_color = cv2.bitwise_and(img,img, mask= mask)
+        #image_print(isolated_color)
 
+        #this is a blank array which is the shape of the image, and all black, which is then going to have a rectangle drawn on it
+        blank = np.zeros(img.shape[:2], dtype = "uint8")
 
-        crop = np.zeros((h,w), dtype = "uint8")
-        h0 = int(h*(5/8))
-        h1 = int(h*(7/8))
-        crop[h0:h1,:] = np.zeros((h1-h0, w), dtype = "uint8")
+        #these are the coordinates which define the rectangle
+        topLeft = (0,5*img.shape[0]/8)
+        botRight = (img.shape[1],7*img.shape[0]/8)
 
-        #output = cv2.bitwise_and(testing, testing, mask=crop)
+        #creates a white rectangle the width of the image and 1/4 the height, offset 1/8 up from the bottom, the rest is black
+        rectangle_mask = cv2.rectangle(blank,topLeft,botRight,(255,255,255),-1)
 
-        image_print(testing)
+        #this calculates the intersection of the color-isolated image with the rectangle, effectively cutting out everything except the
+        #sliver of image that we want
+        output = cv2.bitwise_and(isolated_color, isolated_color, mask=rectangle_mask)
 
-        gray = cv2.cvtColor(testing, cv2.COLOR_BGR2GRAY)
+        # image_print(output)
+
+        #NOW ALL OF THIS SHOULD BE THE EXACT SAME AS THE NORMAL COLOR SEGMENTATION
+        gray = cv2.cvtColor(output, cv2.COLOR_BGR2GRAY)
+
         kernel = np.ones((5,5), np.uint8)
         kernel2 = np.ones((5,5), np.uint8)
         gray = cv2.dilate(gray, kernel2, iterations=1)
@@ -100,8 +97,9 @@ def cd_color_segmentation(img, template):
         cv2.rectangle(gray,(x,y),(x+w,y+h),(255,255,255),2)
 
 
-        # image_print(output)
-        # image_print(img)
-        # image_print(gray)
-        # print(bounding_box)
-	return bounding_box
+        #image_print(img)
+        #image_print(gray)
+        #print(bounding_box)
+        #image_print(isolated_color)
+        #image_print(output)	
+        return bounding_box

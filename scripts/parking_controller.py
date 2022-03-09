@@ -113,7 +113,7 @@ class ParkingController():
         error_msg = ParkingError()      
         error_msg.x_error = self.relative_x
         error_msg.y_error = self.relative_y
-        error_msg.distance_error = (self.relative_x**2 + self.relative_y**2)**(0.5) - self.parking_distance
+        error_msg.distance_error = -(self.relative_x**2 + self.relative_y**2)**(0.5) + self.parking_distance
         
         self.error_pub.publish(error_msg)
 
