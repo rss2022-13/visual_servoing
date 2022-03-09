@@ -70,7 +70,7 @@ def cd_color_segmentation(img, template):
         #sliver of image that we want
         output = cv2.bitwise_and(isolated_color, isolated_color, mask=rectangle_mask)
 
-        image_print(output)
+        # image_print(output)
 
         #NOW ALL OF THIS SHOULD BE THE EXACT SAME AS THE NORMAL COLOR SEGMENTATION
         gray = cv2.cvtColor(output, cv2.COLOR_BGR2GRAY)
@@ -96,8 +96,8 @@ def cd_color_segmentation(img, template):
         cv2.rectangle(gray,(x,y),(x+w,y+h),(255,255,255),2)
 
         
-        image_print(img)
-        image_print(gray)
-        print(bounding_box)
-        image_print(output)
+        # image_print(img)
+        # image_print(gray)
+        # print(bounding_box)
+        # image_print(output)
 	return bounding_box
