@@ -52,29 +52,27 @@ def cd_color_segmentation(img, template):
 	#light_orange = np.array([5, 100, 20])
         #dark_orange = np.array([15,255,255])
  
-        '''
-        overlay = np.zeros((h,w),np.float32)
-        for i in range(int(5*overlay.shape[0])/8, int(7*overlay.shape[0]/8)):
-                overlay[i] = np.ones((w),np.float32)
-        clip_mat = cv2.CreateMat(h,w,cv2.CV_32FC3)
-        clip_arr = cv2.fromarray(overlay)
-        clip = cv2.cvtColor(clip_arr,clip_mat,cv2.CV_BGR2GRAY)
-        # img = cv2.bitwise_and(img,clip)
-        '''
 
         mask = cv2.inRange(hsv, light_orange, dark_orange)
-        output = cv2.bitwise_and(img,img, mask= mask)
+        isolated_color = cv2.bitwise_and(img,img, mask= mask)
+
+        #this is a blank array which is the shape of the image, and all black, which is then going to have a rectangle drawn on it
+        blank = np.zeros(img.shape[:2], dtype = "uint8")
+
+        #these are the coordinates which define the rectangle
+        topLeft = (0,5*img.shape[0]/8)
+        botRight = (img.shape[1],7*img.shape[0]/8)
+
+        #creates a white rectangle the width of the image and 1/4 the height, offset 1/8 up from the bottom, the rest is black
+        rectangle_mask = cv2.rectangle(blank,topLeft,botRight,(255,255,255),-1) 
+
+        #this calculates the intersection of the color-isolated image with the rectangle, effectively cutting out everything except the 
+        #sliver of image that we want
+        output = cv2.bitwise_and(isolated_color, isolated_color, mask=rectangle_mask)
+
         image_print(output)
-        h,w,c = output.shape
 
-
-        crop = np.ones((h,w), dtype = "uint8")
-        h0 = int(h*(7/8))
-        h1 = int(h)
-        crop[h0:h1,:] = np.zeros((h1-h0, w), dtype = "uint8")
-
-        #output = cv2.bitwise_and(output, output, mask=crop)
-
+        #NOW ALL OF THIS SHOULD BE THE EXACT SAME AS THE NORMAL COLOR SEGMENTATION
         gray = cv2.cvtColor(output, cv2.COLOR_BGR2GRAY)
         kernel = np.ones((5,5), np.uint8)
         kernel2 = np.ones((5,5), np.uint8)
