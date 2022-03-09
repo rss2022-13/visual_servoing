@@ -52,31 +52,6 @@ def cd_color_segmentation(img, template):
 	#light_orange = np.array([5, 100, 20])
         #dark_orange = np.array([15,255,255])
  
-<<<<<<< Updated upstream
-
-        mask = cv2.inRange(hsv, light_orange, dark_orange)
-        isolated_color = cv2.bitwise_and(img,img, mask= mask)
-        #image_print(isolated_color)
-
-        #this is a blank array which is the shape of the image, and all black, which is then going to have a rectangle drawn on it
-        blank = np.zeros(img.shape[:2], dtype = "uint8")
-
-        #these are the coordinates which define the rectangle
-        topLeft = (0,3*img.shape[0]/8)
-        botRight = (img.shape[1],5*img.shape[0]/8)
-
-        #creates a white rectangle the width of the image and 1/4 the height, offset 1/8 up from the bottom, the rest is black
-        rectangle_mask = cv2.rectangle(blank,topLeft,botRight,(255,255,255),-1) 
-
-        #this calculates the intersection of the color-isolated image with the rectangle, effectively cutting out everything except the 
-        #sliver of image that we want
-        output = cv2.bitwise_and(isolated_color, isolated_color, mask=rectangle_mask)
-
-        # image_print(output)
-
-        #NOW ALL OF THIS SHOULD BE THE EXACT SAME AS THE NORMAL COLOR SEGMENTATION
-        gray = cv2.cvtColor(output, cv2.COLOR_BGR2GRAY)
-=======
         '''
         overlay = np.zeros((h,w),np.float32)
         for i in range(int(5*overlay.shape[0])/8, int(7*overlay.shape[0]/8)):
@@ -103,7 +78,6 @@ def cd_color_segmentation(img, template):
         image_print(testing)
 
         gray = cv2.cvtColor(testing, cv2.COLOR_BGR2GRAY)
->>>>>>> Stashed changes
         kernel = np.ones((5,5), np.uint8)
         kernel2 = np.ones((5,5), np.uint8)
         gray = cv2.dilate(gray, kernel2, iterations=1)
@@ -125,16 +99,9 @@ def cd_color_segmentation(img, template):
         cv2.rectangle(img,(x,y),(x+w,y+h),(255,255,255),2)
         cv2.rectangle(gray,(x,y),(x+w,y+h),(255,255,255),2)
 
-<<<<<<< Updated upstream
-        
-        #image_print(img)
-        #image_print(gray)
-        print(bounding_box)
-        # image_print(output)
-=======
+
         # image_print(output)
         # image_print(img)
         # image_print(gray)
         # print(bounding_box)
->>>>>>> Stashed changes
 	return bounding_box
