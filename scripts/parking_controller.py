@@ -26,8 +26,8 @@ class ParkingController():
         self.relative_y = 0
         self.speed = 0.5
         self.angle = 0
-        self.dist_P = rospy.get_param("~dist_P")
-        self.dist_D = rospy.get_param("~dist_D")
+        self.dist_P = 1
+        self.dist_D = 1.1
         self.ang_P = rospy.get_param("~ang_P")
         self.ang_D = rospy.get_param("~ang_D")
         self.prev_dist_err = 0
