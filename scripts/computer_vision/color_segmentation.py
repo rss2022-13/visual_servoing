@@ -40,7 +40,7 @@ def cd_color_segmentation(img, template):
 	hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
         #colors in hsv
-        light_orange = np.array([5, 200, 200])
+        light_orange = np.array([10, 125, 125])
         dark_orange = np.array([35,255,255])
 	
         #light_orange = np.array([5, 200, 200])
@@ -52,6 +52,7 @@ def cd_color_segmentation(img, template):
 	#light_orange = np.array([5, 100, 20])
         #dark_orange = np.array([15,255,255])
  
+<<<<<<< Updated upstream
 
         mask = cv2.inRange(hsv, light_orange, dark_orange)
         isolated_color = cv2.bitwise_and(img,img, mask= mask)
@@ -75,6 +76,34 @@ def cd_color_segmentation(img, template):
 
         #NOW ALL OF THIS SHOULD BE THE EXACT SAME AS THE NORMAL COLOR SEGMENTATION
         gray = cv2.cvtColor(output, cv2.COLOR_BGR2GRAY)
+=======
+        '''
+        overlay = np.zeros((h,w),np.float32)
+        for i in range(int(5*overlay.shape[0])/8, int(7*overlay.shape[0]/8)):
+                overlay[i] = np.ones((w),np.float32)
+        clip_mat = cv2.CreateMat(h,w,cv2.CV_32FC3)
+        clip_arr = cv2.fromarray(overlay)
+        clip = cv2.cvtColor(clip_arr,clip_mat,cv2.CV_BGR2GRAY)
+        # img = cv2.bitwise_and(img,clip)
+        '''
+
+        mask = cv2.inRange(hsv, light_orange, dark_orange)
+        testing = cv2.bitwise_and(img,img, mask= mask)
+        #image_print(testing)
+        h,w,c = testing.shape
+
+
+        crop = np.zeros((h,w), dtype = "uint8")
+        h0 = int(h*(5/8))
+        h1 = int(h*(7/8))
+        crop[h0:h1,:] = np.zeros((h1-h0, w), dtype = "uint8")
+
+        #output = cv2.bitwise_and(testing, testing, mask=crop)
+
+        image_print(testing)
+
+        gray = cv2.cvtColor(testing, cv2.COLOR_BGR2GRAY)
+>>>>>>> Stashed changes
         kernel = np.ones((5,5), np.uint8)
         kernel2 = np.ones((5,5), np.uint8)
         gray = cv2.dilate(gray, kernel2, iterations=1)
@@ -96,9 +125,16 @@ def cd_color_segmentation(img, template):
         cv2.rectangle(img,(x,y),(x+w,y+h),(255,255,255),2)
         cv2.rectangle(gray,(x,y),(x+w,y+h),(255,255,255),2)
 
+<<<<<<< Updated upstream
         
         #image_print(img)
         #image_print(gray)
         print(bounding_box)
         # image_print(output)
+=======
+        # image_print(output)
+        # image_print(img)
+        # image_print(gray)
+        # print(bounding_box)
+>>>>>>> Stashed changes
 	return bounding_box
